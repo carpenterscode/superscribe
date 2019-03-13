@@ -1,0 +1,24 @@
+{
+	"auto_renew_status": 1,
+	"status": 0,
+	"auto_renew_product_id": "year-premium",
+	"receipt": {
+		"expires_date_formatted": "2019-08-20 04:28:57 Etc/GMT",
+		"is_in_intro_offer_period": "false",
+		"is_trial_period": "false",
+		"original_transaction_id": "123456789012345",
+		"product_id": "year-premium",
+		"purchase_date": "2018-08-20 04:28:57 Etc/GMT",
+		"original_purchase_date": "2018-08-20 04:28:58 Etc/GMT"
+	},
+	"latest_receipt_info": {
+		"expires_date_formatted": "2019-08-20 04:28:57 Etc/GMT",
+		"is_in_intro_offer_period": "false",
+		"is_trial_period": "false",
+		"original_transaction_id": "123456789012345",
+		"product_id": "year-premium",
+		"purchase_date": "2018-08-20 04:28:57 Etc/GMT",
+		"original_purchase_date": "2018-08-20 04:28:58 Etc/GMT"
+	},
+	"latest_receipt": "latestreceipt=="
+}

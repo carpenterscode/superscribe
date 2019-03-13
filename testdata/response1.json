@@ -1,0 +1,43 @@
+{
+	"latest_receipt_info": [
+		{
+			"is_trial_period": "false",
+			"original_purchase_date": "2015-05-20 17:41:12 Etc/GMT",
+			"original_transaction_id": "123456789012345",
+			"product_id": "year-premium",
+			"purchase_date": "2015-05-20 17:41:12 Etc/GMT"
+		},
+		{
+			"expires_date": "2015-05-23 17:05:59 Etc/GMT",
+			"is_trial_period": "false",
+			"original_purchase_date": "2015-05-23 17:03:00 Etc/GMT",
+			"original_transaction_id": "123456789012345",
+			"product_id": "year-premium",
+			"purchase_date": "2015-05-23 17:02:59 Etc/GMT"
+		}
+	],
+	"receipt": [
+		{
+			"in_app": [
+				{
+					"is_trial_period": "false",
+					"original_purchase_date": "2015-05-24 01:06:58 Etc/GMT",
+					"original_transaction_id": "123456789012345",
+					"product_id": "year-premium",
+					"purchase_date": "2015-05-24 01:06:58 Etc/GMT"
+				},
+				{
+					"is_trial_period": "false",
+					"original_purchase_date": "2015-05-20 17:41:12 Etc/GMT",
+					"original_transaction_id": "123456789012345",
+					"product_id": "year-premium",
+					"purchase_date": "2015-05-20 17:41:12 Etc/GMT"
+				}
+			],
+			"original_purchase_date": "2013-08-01 07:00:00 Etc/GMT",
+			"receipt_type": "ProductionSandbox",
+			"request_date": "2015-05-24 16:31:18 Etc/GMT"
+		}
+	],
+	"status": 0
+}
