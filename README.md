@@ -53,6 +53,8 @@ import (
 	"log"
 	"os"
 	"os/signal"
+
+	ss "github.com/carpenterscode/superscriber"
 )
 
 func matchWithDB(now time.Time, lookahead time.Duration, db sql.DB) []string {
