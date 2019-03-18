@@ -1,0 +1,13 @@
+sudo: false
+language: go
+go:
+- 1.9.x
+- 1.10.x
+- 1.11.x
+- 1.12.x
+
+install:
+  - go get -v -d github.com/carpenterscode/superscriber
+
+script:
+  - go test .

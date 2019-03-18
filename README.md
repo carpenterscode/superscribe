@@ -1,5 +1,8 @@
 # Superscriber
 
+[![Build Status](https://travis-ci.org/carpenterscode/superscriber.svg?branch=master)](https://travis-ci.org/carpenterscode/superscriber)
+[![GoDoc](https://godoc.org/github.com/carpenterscode/superscriber?status.svg)](https://godoc.org/github.com/carpenterscode/superscriber)
+
 A consistent way to manage App Store subscriptions
 
 ## Overview
