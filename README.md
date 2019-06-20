@@ -117,13 +117,13 @@ You cannot currently
 Generate mocks first
 
 ```sh
-mockgen -destination=./ss/mock/mock.go -package=mock abide/ss/interfaces EventListener,Subscription,User
+mockgen -package=superscriber -destination=./mock.go -self_package=github.com/carpenterscode/superscriber github.com/carpenterscode/superscriber EventListener,Subscription
 ```
 
 Test
 
 ```sh
-go test ./ss
+go test
 ```
 
 ## Caveats
