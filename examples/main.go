@@ -9,8 +9,8 @@ import (
 	".."
 )
 
-func fetch(originalTransactionID string) appstore.SubscriptionValues {
-	log.Println("original transaction ID", originalTransactionID)
+func fetch(receipt string) appstore.SubscriptionValues {
+	log.Println("receipt", receipt)
 	return nil
 }
 
@@ -31,7 +31,7 @@ func (h stubListener) ChangedAutoRenewProduct(evt appstore.AutoRenewEvent) {
 }
 
 func (h stubListener) ChangedAutoRenewStatus(evt appstore.AutoRenewEvent) {
-	log.Println("ChangedAutoRenewStatus", evt.AutoRenewChangedAt(), evt.AutoRenewOn())
+	log.Println("ChangedAutoRenewStatus", evt.AutoRenewChangedAt(), evt.AutoRenewStatus())
 }
 
 func (h stubListener) Refunded(evt appstore.RefundEvent) {

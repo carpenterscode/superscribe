@@ -4,13 +4,14 @@
 		"expires_date_formatted": "2019-03-13 19:11:36 Etc/GMT",
 		"is_in_intro_offer_period": "false",
 		"is_trial_period": "false",
+		"item_id": "1454202270",
 		"original_transaction_id": "123456789012345",
 		"product_id": "year-premium",
 		"purchase_date": "2019-03-06 20:11:36 Etc/GMT",
-		"original_purchase_date": "2019-01-23 13:49:00 Etc/GMT"
+		"original_purchase_date": "2019-03-02 07:27:19 Etc/GMT"
 	},
 	"environment": "PROD",
 	"auto_renew_status": "true",
 	"auto_renew_product_id": "year-premium",
-	"notification_type": "RENEWAL"
+	"notification_type": "INITIAL_BUY"
 }

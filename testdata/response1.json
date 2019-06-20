@@ -39,5 +39,13 @@
 			"request_date": "2015-05-24 16:31:18 Etc/GMT"
 		}
 	],
-	"status": 0
+	"status": 0,
+	"pending_renewal_info": [
+		{
+			"auto_renew_product_id": "year-premium",
+			"original_transaction_id": "123456789012345",
+			"product_id": "year-premium",
+			"auto_renew_status": "1"
+		}
+	]
 }

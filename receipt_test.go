@@ -42,6 +42,10 @@ func TestParseResponse1(t *testing.T) {
 	if !resp.ExpiresAt().Equal(expiresAt) {
 		t.Errorf("Should parse %s as %s", resp.ExpiresAt(), expiresAt)
 	}
+
+	if resp.Status() != StatusValid {
+		t.Error("Should parse status as valid")
+	}
 }
 
 func TestParseResponse2(t *testing.T) {
@@ -60,6 +64,9 @@ func TestParseResponse2(t *testing.T) {
 		t.Errorf("Should parse %s as %s", resp.ExpiresAt(), expiresAt)
 	}
 
+	if resp.Status() != StatusValid {
+		t.Error("Should parse status as valid")
+	}
 }
 
 func TestParseResponse3(t *testing.T) {
@@ -78,4 +85,12 @@ func TestParseResponse3(t *testing.T) {
 		t.Errorf("Should parse %s as %s", resp.ExpiresAt(), expiresAt)
 	}
 
+	cancelledAt := time.Date(2018, time.March, 26, 14, 57, 39, 0, time.UTC)
+	if resp.CancelledAt().IsZero() || !cancelledAt.Equal(resp.CancelledAt()) {
+		t.Errorf("Should parse %s as %s", resp.CancelledAt(), cancelledAt)
+	}
+
+	if resp.Status() != StatusSubscriptionExpired {
+		t.Error("Should parse status as 21006 Expired")
+	}
 }

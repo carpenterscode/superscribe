@@ -2,14 +2,14 @@
 	"environment": "PROD",
 	"auto_renew_status": "false",
 	"latest_expired_receipt_info": {
-		"expires_date_formatted": "2020-03-02 15:27:48 Etc/GMT",
+		"expires_date_formatted": "2019-03-13 19:11:36 Etc/GMT",
 		"is_in_intro_offer_period": "false",
 		"is_trial_period": "false",
 		"original_transaction_id": "123456789012345",
 		"cancellation_date": "2019-03-06 17:30:17 Etc/GMT",
 		"product_id": "year-premium",
 		"purchase_date": "2019-03-06 20:11:36 Etc/GMT",
-		"original_purchase_date": "2019-02-16 15:27:48 Etc/GMT"
+		"original_purchase_date": "2019-03-02 07:27:19 Etc/GMT"
 	},
 	"latest_expired_receipt": "expiredreceipt==",
 	"cancellation_date": "2019-03-06 17:30:17 Etc/GMT",

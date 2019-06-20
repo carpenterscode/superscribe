@@ -4,27 +4,10 @@ import (
 	"time"
 )
 
-type env string
-
-const (
-	Sandbox env = "Sandbox"
-	Prod    env = "PROD"
-)
-
-type nType string
-
-const (
-	Cancel               nType = "CANCEL"
-	DidChangeRenewalPref nType = "DID_CHANGE_RENEWAL_PREF"
-	InitialBuy           nType = "INITIAL_BUY"
-	InteractiveRenewal   nType = "INTERACTIVE_RENEWAL"
-	Renewal              nType = "RENEWAL"
-)
-
 type Notification struct {
-	Environment      env    `json:"environment"`
-	NotificationType nType  `json:"notification_type"`
-	Password         string `json:"password"`
+	Env              Env      `json:"environment"`
+	NotificationType NoteType `json:"notification_type"`
+	Password         string   `json:"password"`
 
 	CancellationDate   *AppleTime `json:"cancellation_date,omitempty"`
 	WebOrderLineItemID string     `json:"web_order_line_item_id"`
@@ -34,69 +17,96 @@ type Notification struct {
 	LatestExpiredReceipt     string          `json:"latest_expired_receipt,omitempty"`
 	LatestExpiredReceiptInfo ios6ReceiptInfo `json:"latest_expired_receipt_info,omitempty"`
 
-	AutoRenewStatus    bool   `json:"auto_renew_status,string"`
-	AutoRenewAdamID    string `json:"auto_renew_adam_id"`
-	AutoRenewProductID string `json:"auto_renew_product_id"`
-	ExpirationIntent   string `json:"expiration_intent"`
+	AutoRenewStatus          bool      `json:"auto_renew_status,string"`
+	AutoRenewStatusChangedAt AppleTime `json:"auto_renew_status_change_date"`
+	AutoRenewAdamID          string    `json:"auto_renew_adam_id"`
+	AutoRenewProductID       string    `json:"auto_renew_product_id"`
+	ExpirationIntent         string    `json:"expiration_intent"`
 }
 
-func (n Notification) AutoRenewOn() bool {
-	return n.AutoRenewStatus
+type notification struct {
+	Notification
 }
 
-func (n Notification) AutoRenewProduct() string {
-	return n.AutoRenewProductID
+func (n notification) AutoRenewStatus() bool {
+	return n.Notification.AutoRenewStatus
 }
 
-func (n Notification) AutoRenewChangedAt() time.Time {
-	return time.Now()
+func (n notification) AutoRenewProduct() string {
+	return n.Notification.AutoRenewProductID
 }
 
-func (n Notification) ExpiresAt() time.Time {
-	if n.CancellationDate != nil {
-		return n.LatestExpiredReceiptInfo.ExpiresAt()
+func (n notification) AutoRenewChangedAt() time.Time {
+	if n.Notification.NotificationType == DidChangeRenewalPref {
+		return time.Now().UTC()
 	}
-	return n.LatestReceiptInfo.ExpiresAt()
+	return n.Notification.AutoRenewStatusChangedAt.Time
 }
 
-func (n Notification) IsTrialPeriod() bool {
-	if n.CancellationDate != nil {
-		return n.LatestExpiredReceiptInfo.IsTrialPeriod()
+func (n notification) CancelledAt() time.Time {
+	if n.Notification.CancellationDate != nil {
+		return n.Notification.CancellationDate.Time
 	}
-	return n.LatestReceiptInfo.IsTrialPeriod()
+	return time.Time{}
 }
 
-func (n Notification) OriginalTransactionID() string {
-	if n.CancellationDate != nil {
-		return n.LatestExpiredReceiptInfo.OriginalTransactionID()
-	}
-	return n.LatestReceiptInfo.OriginalTransactionID()
+func (n notification) Environment() Env {
+	return n.Notification.Env
 }
 
-func (n Notification) PaidAt() time.Time {
-	if n.CancellationDate != nil {
-		return n.LatestExpiredReceiptInfo.PaidAt()
+func (n notification) ExpiresAt() time.Time {
+	if n.Notification.CancellationDate != nil {
+		return n.Notification.LatestExpiredReceiptInfo.ExpiresAt()
 	}
-	return n.LatestReceiptInfo.PaidAt()
+	return n.Notification.LatestReceiptInfo.ExpiresAt()
 }
 
-func (n Notification) ProductID() string {
-	if n.CancellationDate != nil {
-		return n.LatestExpiredReceiptInfo.ProductID()
+func (n notification) IsTrialPeriod() bool {
+	if n.Notification.CancellationDate != nil {
+		return n.Notification.LatestExpiredReceiptInfo.IsTrialPeriod()
 	}
-	return n.LatestReceiptInfo.ProductID()
+	return n.Notification.LatestReceiptInfo.IsTrialPeriod()
 }
 
-func (n Notification) RefundedAt() time.Time {
-	if n.CancellationDate != nil {
-		return (*(n.CancellationDate)).Time
+func (n notification) OriginalTransactionID() string {
+	if n.Notification.CancellationDate != nil {
+		return n.Notification.LatestExpiredReceiptInfo.OriginalTransactionID()
 	}
-	return time.Now()
+	return n.Notification.LatestReceiptInfo.OriginalTransactionID()
 }
 
-func (n Notification) StartedTrialAt() time.Time {
-	if n.CancellationDate != nil {
-		return n.LatestExpiredReceiptInfo.OriginalPurchaseDate.Time
+func (n notification) PaidAt() time.Time {
+	if n.Notification.CancellationDate != nil {
+		return n.Notification.LatestExpiredReceiptInfo.PaidAt()
 	}
-	return n.LatestReceiptInfo.OriginalPurchaseDate.Time
+	return n.Notification.LatestReceiptInfo.PaidAt()
+}
+
+func (n notification) ProductID() string {
+	if n.Notification.CancellationDate != nil {
+		return n.Notification.LatestExpiredReceiptInfo.ProductID()
+	}
+	return n.Notification.LatestReceiptInfo.ProductID()
+}
+
+func (n notification) RefundedAt() time.Time {
+	if n.Notification.CancellationDate != nil {
+		return (*(n.Notification.CancellationDate)).Time
+	}
+	return time.Time{}
+}
+
+func (n notification) StartedTrialAt() time.Time {
+	if n.Notification.CancellationDate != nil {
+		return n.Notification.LatestExpiredReceiptInfo.StartedTrialAt()
+	}
+	return n.Notification.LatestReceiptInfo.StartedTrialAt()
+}
+
+func (n notification) Status() int {
+	return StatusValid // TODO: Update to use unified receipt in Fall 2019
+}
+
+func (n notification) Type() NoteType {
+	return n.Notification.NotificationType
 }

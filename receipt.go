@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"sort"
 	"time"
 )
 
@@ -19,7 +20,7 @@ const (
 
 var fromTestEnvError = errors.New("Test receipt should be retrieved from prod endpoint")
 
-func verifyReceipt(secret, receipt string) (ReceiptInfo, error) {
+func VerifyReceipt(secret, receipt string) (ReceiptInfo, error) {
 
 	if secret == "" {
 		return nil, errors.New("itunes.appSharedSecret should have been set")
@@ -82,7 +83,6 @@ func sendVerifyRequest(client *http.Client, verifyUrl string, postData io.Reader
 	// Send the receipt data to Apple for verification
 	verifyResp, responseErr := client.Post(verifyUrl, "application/json", postData)
 	if responseErr != nil {
-		log.Println("Apple verifyReceipt responded with", verifyResp.Status)
 		return nil, responseErr
 	}
 
@@ -104,8 +104,19 @@ func parseVerifyResponse(data []byte) (ReceiptInfo, error) {
 		return nil, err
 	}
 
+	switch resp.Status() {
+	case StatusUnreadable, StatusUnreachable:
+		// TODO: Schedule a retry
+		return nil, fmt.Errorf(resp.Error())
+	case StatusReceiptMalformed, StatusNotAuthenticated:
+		// TODO: Flag account with malformed or unauthenticated receipt for follow up
+		return nil, fmt.Errorf(resp.Error())
+	case StatusMismatchedSecret:
+		return nil, fmt.Errorf("Tried to verify receipt with wrong password")
+	}
+
 	var receiptInfoData json.RawMessage
-	if resp.Status == StatusSubscriptionExpired || len(resp.LatestExpiredReceiptInfo) > 0 {
+	if resp.Status() == StatusSubscriptionExpired || len(resp.LatestExpiredReceiptInfo) > 0 {
 		receiptInfoData = resp.LatestExpiredReceiptInfo
 	} else {
 		receiptInfoData = resp.LatestReceiptInfo
@@ -113,8 +124,21 @@ func parseVerifyResponse(data []byte) (ReceiptInfo, error) {
 
 	var receiptInfo interface{}
 	if err := json.Unmarshal(receiptInfoData, &receiptInfo); err != nil {
-		log.Println("Should have decoded non/expired receipt")
+		log.Println("Should have decoded non/expired receipt", string(data))
 		return nil, err
+	}
+
+	autoRenewStatus := resp.AutoRenewStatus == 1
+
+	var pendingRenewalInfo []renewalInfo
+	if len(resp.PendingRenewalInfo) > 0 {
+		if err := json.Unmarshal(resp.PendingRenewalInfo, &pendingRenewalInfo); err != nil {
+			log.Println("Should have decoded pending renewal info", err, string(data))
+			return nil, err
+		}
+		if len(pendingRenewalInfo) > 0 {
+			autoRenewStatus = autoRenewStatus || pendingRenewalInfo[0].AutoRenewStatus == 1
+		}
 	}
 
 	switch receiptInfo.(type) {
@@ -124,6 +148,8 @@ func parseVerifyResponse(data []byte) (ReceiptInfo, error) {
 			log.Println("Should have decoded iOS 6 style receipt")
 			return nil, err
 		}
+		info.receiptInfo.status = resp.Status()
+		info.receiptInfo.autoRenewStatus = autoRenewStatus
 		return info, nil
 	case []interface{}:
 		var info []modernReceiptInfo
@@ -131,22 +157,17 @@ func parseVerifyResponse(data []byte) (ReceiptInfo, error) {
 			log.Println("Should have decoded iOS 7+ style receipt")
 			return nil, err
 		}
-		return info[len(info)-1], nil
+		sort.Slice(info, func(i, j int) bool {
+			return info[i].PurchaseDate.Time.Before(info[j].PurchaseDate.Time)
+		})
+
+		latestInfo := info[len(info)-1]
+		latestInfo.receiptInfo.status = resp.Status()
+		latestInfo.receiptInfo.autoRenewStatus = autoRenewStatus
+		return latestInfo, nil
 	}
 
-	switch resp.Status {
-	case StatusUnreadable, StatusUnreachable:
-		// TODO: Schedule a retry
-		break
-	case StatusReceiptMalformed, StatusNotAuthenticated:
-		// TODO: Flag account with malformed or unauthenticated receipt for follow up
-		break
-	case StatusMismatchedSecret:
-		log.Println("Tried to verify receipt with wrong password")
-		break
-	}
-
-	return nil, fmt.Errorf("Could not parse verifyReceipt response %d\n", resp.Status)
+	return nil, fmt.Errorf("Could not parse verifyReceipt response %d\n", resp.Status())
 }
 
 // These structs model the receipt data from Apple
@@ -156,14 +177,6 @@ type VerifyReceiptRequest struct {
 	ReceiptData            string `json:"receipt-data"`
 	Password               string `json:"password"`
 	ExcludeOldTransactions bool   `json:"exclude-old-transactions,string"`
-}
-
-type ReceiptInfo interface {
-	ExpiresAt() time.Time
-	IsTrialPeriod() bool
-	OriginalTransactionID() string
-	PaidAt() time.Time
-	ProductID() string
 }
 
 // https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html#//apple_ref/doc/uid/TP40010573-CH104-SW1
@@ -181,19 +194,23 @@ const (
 )
 
 type verifyResponse struct {
-	Status                   int             `json:"status"`
+	StatusField              int             `json:"status"`
+	AutoRenewStatus          int             `json:"auto_renew_status"`
 	CancellationDate         *AppleTime      `json:"cancellation_date"`
 	LatestReceiptInfo        json.RawMessage `json:"latest_receipt_info"`
 	LatestExpiredReceiptInfo json.RawMessage `json:"latest_expired_receipt_info"`
-	receiptInfo              ReceiptInfo     `json:"-"`
+	receiptInfo              ReceiptInfo
+
+	PendingRenewalInfo json.RawMessage `json:"pending_renewal_info"`
+	renewalInfo        renewalInfo
 }
 
 func (r verifyResponse) HasError() bool {
-	return r.Status != 0
+	return !(r.StatusField == StatusValid || r.StatusField == StatusSubscriptionExpired)
 }
 
 func (r verifyResponse) Error() string {
-	switch r.Status {
+	switch r.StatusField {
 	case StatusUnreadable:
 		return "The App Store could not read the JSON object you provided."
 	case StatusReceiptMalformed:
@@ -215,6 +232,10 @@ func (r verifyResponse) Error() string {
 	}
 }
 
+func (r verifyResponse) Status() int {
+	return r.StatusField
+}
+
 type ios6ReceiptInfo struct {
 	receiptInfo
 	ExpiresDate AppleTime `json:"expires_date_formatted"`
@@ -229,11 +250,20 @@ type modernReceiptInfo struct {
 	ExpiresDate AppleTime `json:"expires_date"`
 }
 
+func (info modernReceiptInfo) Status() int {
+	return info.receiptInfo.status
+}
+
 func (info modernReceiptInfo) ExpiresAt() time.Time {
 	return info.ExpiresDate.Time
 }
 
 type receiptInfo struct {
+	status          int
+	autoRenewStatus bool
+	currency        string
+	price           float64
+
 	Quantity                   string     `json:"quantity"`
 	ProductIDField             string     `json:"product_id"`
 	TransactionID              string     `json:"transaction_id"`
@@ -244,6 +274,29 @@ type receiptInfo struct {
 	IsTrialPeriodField         bool       `json:"is_trial_period,string"`
 }
 
+func (info receiptInfo) Status() int {
+	return info.status
+}
+
+func (info receiptInfo) HasError() bool {
+	return !(info.status == StatusValid || info.status == StatusSubscriptionExpired)
+}
+
+func (info receiptInfo) AutoRenewStatus() bool {
+	return info.autoRenewStatus
+}
+
+func (info receiptInfo) CancelledAt() time.Time {
+	if info.CancellationDate != nil {
+		return info.CancellationDate.Time
+	}
+	return time.Time{}
+}
+
+func (info receiptInfo) Currency() string {
+	return info.currency
+}
+
 func (info receiptInfo) OriginalTransactionID() string {
 	return info.OriginalTransactionIDField
 }
@@ -252,10 +305,24 @@ func (info receiptInfo) PaidAt() time.Time {
 	return info.PurchaseDate.Time
 }
 
+func (info receiptInfo) Price() float64 {
+	return info.price
+}
+
 func (info receiptInfo) ProductID() string {
 	return info.ProductIDField
 }
 
 func (info receiptInfo) IsTrialPeriod() bool {
 	return info.IsTrialPeriodField
+}
+
+func (info receiptInfo) StartedTrialAt() time.Time {
+	return info.OriginalPurchaseDate.Time
+}
+
+type renewalInfo struct {
+	AutoRenewStatus    int    `json:"auto_renew_status,string"`
+	AutoRenewProductID string `json:"auto_renew_product_id"`
+	ProductID          string `json:"product_id"`
 }

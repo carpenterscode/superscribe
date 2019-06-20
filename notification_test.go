@@ -8,30 +8,44 @@ import (
 	"time"
 )
 
+const (
+	currency     = "USD"
+	price        = 9.99
+	productID    = "year-premium"
+	newProductID = "month-premium"
+)
+
+var autoRenewStatusChangedDate = time.Date(2019, time.June, 10, 21, 39, 47, 0, time.UTC)
 var cancellationDate = time.Date(2019, time.March, 6, 17, 30, 17, 0, time.UTC)
 var expiresDate = time.Date(2019, time.March, 13, 19, 11, 36, 0, time.UTC)
 var purchaseDate = time.Date(2019, time.March, 6, 20, 11, 36, 0, time.UTC)
 var originalPurchaseDate = time.Date(2019, time.March, 6, 20, 11, 36, 0, time.UTC)
 var originalTransactionID = "123456789012345"
 
-func notificationFromFile(fileName string) *Notification {
-	var n Notification
+func dataFromFile(fileName string) []byte {
 	if data, err := ioutil.ReadFile("testdata/" + fileName); err != nil {
 		panic(err)
-	} else if err := json.Unmarshal(data, &n); err != nil {
-		panic(fmt.Errorf("Should have unmarshalled JSON"))
+	} else {
+		return data
 	}
-	return &n
 }
 
-func TestCancel(t *testing.T) {
-	n := notificationFromFile("notification_cancel.json")
+func notificationFromFile(fileName string) *notification {
+	var n Notification
+	if err := json.Unmarshal(dataFromFile(fileName), &n); err != nil {
+		panic(fmt.Errorf("Should have unmarshalled JSON"))
+	}
+	return &notification{Notification: n}
+}
 
-	if n.Environment != Prod {
+func TestParseCancel(t *testing.T) {
+	n := notificationFromFile("CANCEL.json")
+
+	if n.Environment() != Prod {
 		t.Error("Should have parsed environment: PROD")
-	} else if n.AutoRenewOn() {
+	} else if n.AutoRenewStatus() {
 		t.Error("Should have correct autorenew status: false")
-	} else if n.NotificationType != Cancel {
+	} else if n.Type() != Cancel {
 		t.Error("Should have parsed notification type: CANCEL")
 	} else if !n.RefundedAt().Equal(cancellationDate) {
 		t.Error("Should have correctly parsed canceledAt", cancellationDate)
@@ -42,14 +56,14 @@ func TestCancel(t *testing.T) {
 	}
 }
 
-func TestInitialBuy(t *testing.T) {
-	n := notificationFromFile("notification_initial_buy.json")
+func TestParseInitialBuy(t *testing.T) {
+	n := notificationFromFile("INITIAL_BUY_to_trial.json")
 
-	if n.Environment != Prod {
+	if n.Environment() != Prod {
 		t.Error("Should have parsed environment: PROD")
-	} else if !n.AutoRenewStatus {
+	} else if !n.AutoRenewStatus() {
 		t.Error("Should have correct autorenew status: true")
-	} else if n.NotificationType != InitialBuy {
+	} else if n.Type() != InitialBuy {
 		t.Error("Should have parsed notification type: INITIAL_BUY")
 	} else if n.LatestReceipt == "" {
 		t.Error("Should have parsed latest_receipt field")
@@ -64,14 +78,14 @@ func TestInitialBuy(t *testing.T) {
 	}
 }
 
-func TestRenewal(t *testing.T) {
-	n := notificationFromFile("notification_renewal.json")
+func TestParseRenewal(t *testing.T) {
+	n := notificationFromFile("RENEWAL.json")
 
-	if n.Environment != Prod {
+	if n.Environment() != Prod {
 		t.Error("Should have parsed environment: PROD")
-	} else if !n.AutoRenewStatus {
+	} else if !n.AutoRenewStatus() {
 		t.Error("Should have correct autorenew status: true")
-	} else if n.NotificationType != Renewal {
+	} else if n.Type() != Renewal {
 		t.Error("Should have parsed notification type: RENEWAL")
 	} else if n.LatestReceipt == "" {
 		t.Error("Should have parsed latest_receipt field")
@@ -86,14 +100,14 @@ func TestRenewal(t *testing.T) {
 	}
 }
 
-func TestInteractiveRenewal(t *testing.T) {
-	n := notificationFromFile("notification_interactive_renewal.json")
+func TestParseInteractiveRenewal(t *testing.T) {
+	n := notificationFromFile("INTERACTIVE_RENEWAL.json")
 
-	if n.Environment != Prod {
+	if n.Environment() != Prod {
 		t.Error("Should have parsed environment: PROD")
-	} else if !n.AutoRenewStatus {
+	} else if !n.AutoRenewStatus() {
 		t.Error("Should have correct autorenew status: true")
-	} else if n.NotificationType != InteractiveRenewal {
+	} else if n.Type() != InteractiveRenewal {
 		t.Error("Should have parsed notification type: INTERACTIVE_RENEWAL")
 	} else if n.LatestReceipt == "" {
 		t.Error("Should have parsed latest_receipt field")
@@ -108,14 +122,14 @@ func TestInteractiveRenewal(t *testing.T) {
 	}
 }
 
-func TestDidChangeRenewalPref(t *testing.T) {
-	n := notificationFromFile("notification_did_change_renewal_pref.json")
+func TestParseDidChangeRenewalPref(t *testing.T) {
+	n := notificationFromFile("DID_CHANGE_RENEWAL_PREF.json")
 
-	if n.Environment != Prod {
+	if n.Environment() != Prod {
 		t.Error("Should have parsed environment: PROD")
-	} else if !n.AutoRenewStatus {
+	} else if !n.AutoRenewStatus() {
 		t.Error("Should have correct autorenew status: true")
-	} else if n.NotificationType != DidChangeRenewalPref {
+	} else if n.Type() != DidChangeRenewalPref {
 		t.Error("Should have parsed notification type: DID_CHANGE_RENEWAL_PREF")
 	} else if n.LatestReceipt == "" {
 		t.Error("Should have parsed latest_receipt field")
@@ -127,5 +141,33 @@ func TestDidChangeRenewalPref(t *testing.T) {
 		t.Error("Should have parsed expires date as", expiresDate)
 	} else if !n.PaidAt().Equal(purchaseDate) {
 		t.Error("Should have parsed purchase date as", purchaseDate)
+	} else if n.AutoRenewProduct() != newProductID {
+		t.Error("Should have parsed new product ID as", newProductID)
+	} else if n.AutoRenewChangedAt().IsZero() {
+		t.Error("Should have parsed auto renewed status changed as non-zero")
+	}
+}
+
+func TestParseDidChangeRenewalStatus(t *testing.T) {
+	n := notificationFromFile("DID_CHANGE_RENEWAL_STATUS_to_off.json")
+
+	if n.Environment() != Prod {
+		t.Error("Should have parsed environment: PROD")
+	} else if n.AutoRenewStatus() {
+		t.Error("Should have correct autorenew status: false")
+	} else if n.Type() != DidChangeRenewalStatus {
+		t.Error("Should have parsed notification type: DID_CHANGE_RENEWAL_STATUS")
+	} else if n.LatestReceipt == "" {
+		t.Error("Should have parsed latest_receipt field")
+	} else if n.OriginalTransactionID() != originalTransactionID {
+		t.Error("Should have parsed original transaction ID:", originalTransactionID)
+	} else if !n.IsTrialPeriod() {
+		t.Error("Should have parsed as in trial period")
+	} else if !n.ExpiresAt().Equal(expiresDate) {
+		t.Error("Should have parsed expires date as", expiresDate)
+	} else if !n.PaidAt().Equal(purchaseDate) {
+		t.Error("Should have parsed purchase date as", purchaseDate)
+	} else if !n.AutoRenewChangedAt().Equal(autoRenewStatusChangedDate) {
+		t.Error("Should have parsed auto renewed status changed as", autoRenewStatusChangedDate)
 	}
 }

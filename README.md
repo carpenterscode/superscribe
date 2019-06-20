@@ -11,8 +11,9 @@ Have you tried using App Store Status Update Notifications for your app’s in-a
 and wondered why there are so few _RENEWAL_ notifications, or why neither _CANCEL_ nor
 _DID_CHANGE_RENEWAL_PREF_ indicate when _auto_renew_status_ was switched on or off,
 or why sometimes you get iOS 6 style receipts when your app never supported iOS 6 to begin with,
-or… why–just why? Subscriptions may not be simple, but the App Store makes it feel unnecessarily
-difficult.
+or… why? Me too. I’m sure some of you have reverse engineered every iteration of Apple’s
+/verifyReceipt endpoint responses or status update notifications, but I’ve had a hard time keeping
+up.
 
 If you don't believe me, check these out:
 
@@ -21,8 +22,8 @@ If you don't believe me, check these out:
 - [Never Get RENEWAL Notification](https://stackoverflow.com/q/48049771/5477264) from StackOverflow
 - [Server to Server Polling Auto Renewable Subscription](https://stackoverflow.com/q/50947948/5477264) from StackOverflow
 
-_Superscriber_ provides a basic solution for the main App Store subscription use cases, making
-it straightforward to reason about, and thus easier to extend for sophisticated or special cases.
+_Superscriber_ intends to provide a basic “just works”, correct solution for the main
+subscription use cases.
 
 ## Get started
 
@@ -32,7 +33,7 @@ it straightforward to reason about, and thus easier to extend for sophisticated 
 go get github.com/carpenterscode/superscriber
 ```
 
-### Usage
+### Configure
 
 _Superscriber_ provides a server that both
 
@@ -53,8 +54,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-
-	ss "github.com/carpenterscode/superscriber"
 )
 
 func matchWithDB(now time.Time, lookahead time.Duration, db sql.DB) []string {
@@ -110,6 +109,22 @@ You cannot currently
 - Modify the App Store Status Update Notification endpoint. It's currently hardcoded to
   `/superscriber`, but we can change that in the future.
 - Use anything more sophisticated than a Go `time.Ticker`.
+
+### Usage
+
+### Run automated tests
+
+Generate mocks first
+
+```sh
+mockgen -destination=./ss/mock/mock.go -package=mock abide/ss/interfaces EventListener,Subscription,User
+```
+
+Test
+
+```sh
+go test ./ss
+```
 
 ## Caveats
 
