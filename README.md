@@ -117,7 +117,7 @@ You cannot currently
 Generate mocks first
 
 ```sh
-mockgen -package=superscriber -destination=./mock.go -self_package=github.com/carpenterscode/superscriber github.com/carpenterscode/superscriber EventListener,Subscription
+go generate
 ```
 
 Test

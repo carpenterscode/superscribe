@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+//go:generate mockgen -package=superscriber -destination=./mock.go -self_package=github.com/carpenterscode/superscriber github.com/carpenterscode/superscriber EventListener,Subscription
+
 // ExpiringSubscriptions returns a list of App Store receipts for subscriptions nearing
 // expiration for a specified current time.
 type ExpiringSubscriptions func(time.Time) []string
