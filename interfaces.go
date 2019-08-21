@@ -1,10 +1,10 @@
-package superscriber
+package superscribe
 
 import (
 	"time"
 )
 
-//go:generate mockgen -package=superscriber -destination=./mock.go -self_package=github.com/carpenterscode/superscriber github.com/carpenterscode/superscriber EventListener,Subscription
+//go:generate mockgen -package=superscribe -destination=./mock.go -self_package=github.com/carpenterscode/superscribe github.com/carpenterscode/superscribe EventListener,Subscription
 
 // ExpiringSubscriptions returns a list of App Store receipts for subscriptions nearing
 // expiration for a specified current time.

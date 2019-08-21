@@ -1,13 +1,13 @@
 sudo: false
 language: go
 go:
-- 1.x
+  - 1.x
 
 env:
   - GO111MODULE=on
 
 install:
-  - go get -v -d github.com/carpenterscode/superscriber
+  - go get -v -d github.com/carpenterscode/superscribe
 
 script:
   - go get github.com/golang/mock/gomock

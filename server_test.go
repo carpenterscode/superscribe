@@ -1,4 +1,4 @@
-package superscriber
+package superscribe
 
 import (
 	"bytes"
@@ -83,7 +83,7 @@ func TestHandleInitialBuyToTrial(t *testing.T) {
 	srv.Listener.Add(mockListener, false)
 
 	// Test code
-	req := httptest.NewRequest("POST", "http://example.com/superscriber", dataReader)
+	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
 	w := httptest.NewRecorder()
 	srv.mux.ServeHTTP(w, req)
 
@@ -122,7 +122,7 @@ func TestHandleInitialBuyToSubscribe(t *testing.T) {
 	srv.Listener.Add(mockListener, false)
 
 	// Test code
-	req := httptest.NewRequest("POST", "http://example.com/superscriber", dataReader)
+	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
 	w := httptest.NewRecorder()
 	srv.mux.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -159,7 +159,7 @@ func TestHandleRenewal(t *testing.T) {
 	srv.Listener.Add(mockListener, false)
 
 	// Test code
-	req := httptest.NewRequest("POST", "http://example.com/superscriber", dataReader)
+	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
 	w := httptest.NewRecorder()
 	srv.mux.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -196,7 +196,7 @@ func TestHandleInteractiveRenewal(t *testing.T) {
 	srv.Listener.Add(mockListener, false)
 
 	// Test code
-	req := httptest.NewRequest("POST", "http://example.com/superscriber", dataReader)
+	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
 	w := httptest.NewRecorder()
 	srv.mux.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -236,7 +236,7 @@ func TestHandleCancel(t *testing.T) {
 	srv.Listener.Add(mockListener, false)
 
 	// Test code
-	req := httptest.NewRequest("POST", "http://example.com/superscriber", dataReader)
+	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
 	w := httptest.NewRecorder()
 	srv.mux.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -274,7 +274,7 @@ func TestHandleDidChangeRenewalStatusToOff(t *testing.T) {
 	srv.Listener.Add(mockListener, false)
 
 	// Test code
-	req := httptest.NewRequest("POST", "http://example.com/superscriber", dataReader)
+	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
 	w := httptest.NewRecorder()
 	srv.mux.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -312,7 +312,7 @@ func TestHandleDidChangeRenewalStatusToOn(t *testing.T) {
 	srv.Listener.Add(mockListener, false)
 
 	// Test code
-	req := httptest.NewRequest("POST", "http://example.com/superscriber", dataReader)
+	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
 	w := httptest.NewRecorder()
 	srv.mux.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -350,7 +350,7 @@ func TestHandleDidChangeRenewalPref(t *testing.T) {
 	srv.Listener.Add(mockListener, false)
 
 	// Test code
-	req := httptest.NewRequest("POST", "http://example.com/superscriber", dataReader)
+	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
 	w := httptest.NewRecorder()
 	srv.mux.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {

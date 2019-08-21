@@ -1,4 +1,4 @@
-package superscriber
+package superscribe
 
 import (
 	"context"
@@ -173,7 +173,7 @@ func NewServer(addr, secret string, matcher ExpiringSubscriptions,
 		Ticker:   time.NewTicker(interval),
 	}
 
-	mux.HandleFunc("/superscriber", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/superscribe", func(w http.ResponseWriter, r *http.Request) {
 		notificationHandler(w, r, srv.Listener, fetch)
 	})
 

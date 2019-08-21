@@ -1,7 +1,7 @@
-# Superscriber
+# Superscribe
 
-[![Build Status](https://travis-ci.org/carpenterscode/superscriber.svg?branch=master)](https://travis-ci.org/carpenterscode/superscriber)
-[![GoDoc](https://godoc.org/github.com/carpenterscode/superscriber?status.svg)](https://godoc.org/github.com/carpenterscode/superscriber)
+[![Build Status](https://travis-ci.org/carpenterscode/superscribe.svg?branch=master)](https://travis-ci.org/carpenterscode/superscribe)
+[![GoDoc](https://godoc.org/github.com/carpenterscode/superscribe?status.svg)](https://godoc.org/github.com/carpenterscode/superscribe)
 
 A consistent way to manage App Store subscriptions
 
@@ -22,7 +22,7 @@ If you don't believe me, check these out:
 - [Never Get RENEWAL Notification](https://stackoverflow.com/q/48049771/5477264) from StackOverflow
 - [Server to Server Polling Auto Renewable Subscription](https://stackoverflow.com/q/50947948/5477264) from StackOverflow
 
-_Superscriber_ intends to provide a basic “just works”, correct solution for the main
+_Superscribe_ intends to provide a basic “just works”, correct solution for the main
 subscription use cases.
 
 ## Get started
@@ -30,12 +30,12 @@ subscription use cases.
 ### Install
 
 ```sh
-go get github.com/carpenterscode/superscriber
+go get github.com/carpenterscode/superscribe
 ```
 
 ### Configure
 
-_Superscriber_ provides a server that both
+_Superscribe_ provides a server that both
 
 - scans for expiring subscriptions to check for state changes (like successful renewals) and
 - listens for App Store notifications for a limited number of subscription events.
@@ -107,7 +107,7 @@ srv.HandleFunc("/healthz", func(writer http.ResponseWriter, req *http.Request) {
 You cannot currently
 
 - Modify the App Store Status Update Notification endpoint. It's currently hardcoded to
-  `/superscriber`, but we can change that in the future.
+  `/superscribe`, but we can change that in the future.
 - Use anything more sophisticated than a Go `time.Ticker`.
 
 ### Usage
@@ -128,7 +128,7 @@ go test
 
 ## Caveats
 
-Currently, _Superscriber_ should only be run in a single instance setup. I personally run it on
+Currently, _Superscribe_ should only be run in a single instance setup. I personally run it on
 production in a single-pod Kubernetes deployment, but we should figure out how to solve for
 redundancy and performance by adding some kind of scalability.
 
@@ -150,4 +150,4 @@ increase extensibility and robustness.
 - **Publish some internal listeners.** Such as AppsFlyer and Amplitude.
 - **Offer a scalable solution.** Subscriptions in the local database should only be scanned by a
   single process, but multiple instances of listeners should be able to coexist. The current 1:1
-  model limits _Superscriber_ to one instance.
+  model limits _Superscribe_ to one instance.

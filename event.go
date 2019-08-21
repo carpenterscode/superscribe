@@ -1,4 +1,4 @@
-package superscriber
+package superscribe
 
 import (
 	"fmt"

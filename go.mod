@@ -1,4 +1,4 @@
-module github.com/carpenterscode/superscriber
+module github.com/carpenterscode/superscribe
 
 go 1.12
 
