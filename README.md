@@ -47,46 +47,9 @@ The server needs
     operation
 3.  A listener to update the database after the scan
 
-```go
-package main
-
-import (
-	"log"
-	"os"
-	"os/signal"
-)
-
-func matchWithDB(now time.Time, lookahead time.Duration, db sql.DB) []string {
-	// TODO: Implement
-}
-
-func fetch(originalTransactionID string) (ss.SubscriptionValues, error) {
-	// TODO: Implement
-}
-
-func main() {
-
-	match := func(now time.Time) []string {
-		return matchWithDB(now, lookahead, db)
-	}
-
-	interval := time.Duration(30) * time.Minute
-
-	srv := ss.NewServer(addr, "secret", match, fetch, interval)
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
-
-	srv.Start()
-	log.Println("Started listening on", srv.Addr())
-
-	<-quit
-	log.Println("Draining…")
-	srv.Stop()
-	log.Println("Server shutdown")
-
-	close(quit)
-}
-```
+See how to connect listeners to Superscribe in [example/main.go](examples/main.go). This shows how
+to use the included [AppsFlyer listener](listener/appsflyer.go) that attributes events using
+server-to-server API.
 
 Optionally you can provide
 
@@ -147,7 +110,6 @@ increase extensibility and robustness.
   but for now, the easy solution involves making one query per listener, per event.
 - **Track plan upgrade responses from customers.** For instance, moving all monthly subscriptions
   from 7.99/mo to 9.99/mo.
-- **Publish some internal listeners.** Such as AppsFlyer and Amplitude.
 - **Offer a scalable solution.** Subscriptions in the local database should only be scanned by a
   single process, but multiple instances of listeners should be able to coexist. The current 1:1
   model limits _Superscribe_ to one instance.

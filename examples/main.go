@@ -6,12 +6,13 @@ import (
 	"os/signal"
 	"time"
 
-	".."
+	ss "github.com/carpenterscode/superscribe"
+	"github.com/carpenterscode/superscribe/listener"
 )
 
-func fetch(receipt string) appstore.SubscriptionValues {
+func fetch(receipt string) (ss.Subscription, error) {
 	log.Println("receipt", receipt)
-	return nil
+	return nil, nil
 }
 
 func match(now time.Time) []string {
@@ -20,38 +21,16 @@ func match(now time.Time) []string {
 	return results
 }
 
-type stubListener struct{}
-
-func (h stubListener) Paid(evt appstore.PayEvent) {
-	log.Println("Paid", evt.PaidAt(), evt.ExpiresAt())
-}
-
-func (h stubListener) ChangedAutoRenewProduct(evt appstore.AutoRenewEvent) {
-	log.Println("ChangedAutoRenewProduct", evt.AutoRenewChangedAt(), evt.AutoRenewProduct())
-}
-
-func (h stubListener) ChangedAutoRenewStatus(evt appstore.AutoRenewEvent) {
-	log.Println("ChangedAutoRenewStatus", evt.AutoRenewChangedAt(), evt.AutoRenewStatus())
-}
-
-func (h stubListener) Refunded(evt appstore.RefundEvent) {
-	log.Println("Refund", evt.RefundedAt())
-}
-
-func (h stubListener) StartedTrial(evt appstore.StartTrialEvent) {
-	log.Println("StartTrial", evt.StartedTrialAt())
-}
-
 func main() {
-	srv := appstore.NewServer(
+	srv := ss.NewServer(
 		":8080",
 		"password",
 		match,
 		fetch,
 		time.Second,
 	)
-	srv.AddListener(stubListener{})
-	srv.AddListener(stubListener{})
+	srv.AddListener(listener.AppsFlyer{}, true)
+	srv.AddListener(listener.Stub{}, false)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
