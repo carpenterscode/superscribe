@@ -69,10 +69,6 @@ func (info receiptInfo) ProductID() string {
 	return info.ReceiptInfoBody.ProductID
 }
 
-func Validate(secret, receiptData string) (Info, error) {
-	return validation{}, nil
-}
-
 type response struct {
 	info receipt
 
@@ -240,7 +236,7 @@ const (
 
 var fromTestEnvError = errors.New("Test receipt should be retrieved from prod endpoint")
 
-func VerifyReceipt(secret, receipt string) (Info, error) {
+func Validate(secret, receipt string) (Info, error) {
 
 	if secret == "" {
 		return nil, errors.New("itunes.appSharedSecret should have been set")
@@ -272,24 +268,24 @@ func VerifyReceipt(secret, receipt string) (Info, error) {
 	// According to https://developer.apple.com/library/ios/technotes/tn2259/_index.html#//apple_ref/doc/uid/DTS40009578-CH1-ITUNES_CONNECT
 	// the correct way to verify is to try the prod verify url, and if that fails, then try the
 	// sandbox url.
-	data, sendErr := sendVerifyRequest(&client, productionURL, postData)
+	data, sendErr := sendReceiptRequest(&client, productionURL, postData)
 	if sendErr != nil {
 		log.Println("sendVerifyReceipt send error", sendErr)
 		return nil, sendErr
 	}
 
-	resp, parseErr := parseVerifyResponse(data)
+	resp, parseErr := parseReceiptResponse(data)
 	if parseErr == fromTestEnvError {
 		if _, err := postData.Seek(0, io.SeekStart); err != nil {
 			log.Println("test error should resend ")
 			return nil, err
 		}
-		data, sendErr = sendVerifyRequest(&client, sandboxURL, postData)
+		data, sendErr = sendReceiptRequest(&client, sandboxURL, postData)
 		if sendErr != nil {
 			log.Println("sendVerifyReceipt send error", sendErr)
 			return nil, sendErr
 		}
-		resp, parseErr = parseVerifyResponse(data)
+		resp, parseErr = parseReceiptResponse(data)
 		if parseErr != nil {
 			log.Println("parseVerify respeon test shoul could not parse ", string(data))
 			return nil, parseErr
@@ -301,7 +297,7 @@ func VerifyReceipt(secret, receipt string) (Info, error) {
 	return resp, nil
 }
 
-func sendVerifyRequest(client *http.Client, verifyUrl string, postData io.Reader) ([]byte, error) {
+func sendReceiptRequest(client *http.Client, verifyUrl string, postData io.Reader) ([]byte, error) {
 	// Send the receipt data to Apple for verification
 	verifyResp, responseErr := client.Post(verifyUrl, "application/json", postData)
 	if responseErr != nil {
@@ -318,7 +314,7 @@ func sendVerifyRequest(client *http.Client, verifyUrl string, postData io.Reader
 	return data, nil
 }
 
-func parseVerifyResponse(data []byte) (Info, error) {
+func parseReceiptResponse(data []byte) (Info, error) {
 
 	var v validation
 	if err := json.Unmarshal(data, &v.response); err != nil {
