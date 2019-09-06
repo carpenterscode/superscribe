@@ -31,11 +31,11 @@ func dataFromFile(fileName string) []byte {
 }
 
 func notificationFromFile(fileName string) *notification {
-	var n Notification
-	if err := json.Unmarshal(dataFromFile(fileName), &n); err != nil {
-		panic(fmt.Errorf("Should have unmarshalled JSON"))
+	var body Notification
+	if err := json.Unmarshal(dataFromFile(fileName), &body); err != nil {
+		panic(fmt.Errorf("Should have unmarshalled JSON: %s", err.Error()))
 	}
-	return &notification{Notification: n}
+	return &notification{body}
 }
 
 func TestParseCancel(t *testing.T) {
@@ -65,7 +65,7 @@ func TestParseInitialBuy(t *testing.T) {
 		t.Error("Should have correct autorenew status: true")
 	} else if n.Type() != InitialBuy {
 		t.Error("Should have parsed notification type: INITIAL_BUY")
-	} else if n.LatestReceipt == "" {
+	} else if n.body.LatestReceipt == "" {
 		t.Error("Should have parsed latest_receipt field")
 	} else if n.OriginalTransactionID() != originalTransactionID {
 		t.Error("Should have parsed original transaction ID:", originalTransactionID)
@@ -87,7 +87,7 @@ func TestParseRenewal(t *testing.T) {
 		t.Error("Should have correct autorenew status: true")
 	} else if n.Type() != Renewal {
 		t.Error("Should have parsed notification type: RENEWAL")
-	} else if n.LatestReceipt == "" {
+	} else if n.body.LatestReceipt == "" {
 		t.Error("Should have parsed latest_receipt field")
 	} else if n.OriginalTransactionID() != originalTransactionID {
 		t.Error("Should have parsed original transaction ID:", originalTransactionID)
@@ -109,7 +109,7 @@ func TestParseInteractiveRenewal(t *testing.T) {
 		t.Error("Should have correct autorenew status: true")
 	} else if n.Type() != InteractiveRenewal {
 		t.Error("Should have parsed notification type: INTERACTIVE_RENEWAL")
-	} else if n.LatestReceipt == "" {
+	} else if n.body.LatestReceipt == "" {
 		t.Error("Should have parsed latest_receipt field")
 	} else if n.OriginalTransactionID() != originalTransactionID {
 		t.Error("Should have parsed original transaction ID:", originalTransactionID)
@@ -131,7 +131,7 @@ func TestParseDidChangeRenewalPref(t *testing.T) {
 		t.Error("Should have correct autorenew status: true")
 	} else if n.Type() != DidChangeRenewalPref {
 		t.Error("Should have parsed notification type: DID_CHANGE_RENEWAL_PREF")
-	} else if n.LatestReceipt == "" {
+	} else if n.body.LatestReceipt == "" {
 		t.Error("Should have parsed latest_receipt field")
 	} else if n.OriginalTransactionID() != originalTransactionID {
 		t.Error("Should have parsed original transaction ID:", originalTransactionID)
@@ -157,7 +157,7 @@ func TestParseDidChangeRenewalStatus(t *testing.T) {
 		t.Error("Should have correct autorenew status: false")
 	} else if n.Type() != DidChangeRenewalStatus {
 		t.Error("Should have parsed notification type: DID_CHANGE_RENEWAL_STATUS")
-	} else if n.LatestReceipt == "" {
+	} else if n.body.LatestReceipt == "" {
 		t.Error("Should have parsed latest_receipt field")
 	} else if n.OriginalTransactionID() != originalTransactionID {
 		t.Error("Should have parsed original transaction ID:", originalTransactionID)

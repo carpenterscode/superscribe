@@ -86,7 +86,7 @@ go generate
 Test
 
 ```sh
-go test
+go test ./... ./receipt
 ```
 
 ## Caveats

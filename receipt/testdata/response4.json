@@ -1,0 +1,20 @@
+{
+	"receipt": {
+		"receipt_type": "ProductionSandbox",
+		"receipt_creation_date": "2019-08-30 21:55:20 Etc/GMT",
+		"request_date": "2019-09-06 17:55:53 Etc/GMT",
+		"original_purchase_date": "2013-08-01 07:00:00 Etc/GMT",
+		"in_app": [
+			{
+				"product_id": "lifetime",
+				"transaction_id": "567890123451234",
+				"original_transaction_id": "123456789012345",
+				"purchase_date": "2019-08-30 19:06:48 Etc/GMT",
+				"original_purchase_date": "2019-08-30 19:06:48 Etc/GMT",
+				"is_trial_period": "false"
+			}
+		]
+	},
+	"status": 0,
+	"environment": "Sandbox"
+}

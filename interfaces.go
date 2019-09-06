@@ -20,7 +20,7 @@ type Note interface {
 	Type() NoteType
 	Environment() Env
 
-	receipt.ReceiptInfo
+	receipt.Info
 
 	AutoRenewProduct() string
 	AutoRenewChangedAt() time.Time

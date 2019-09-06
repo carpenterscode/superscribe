@@ -15,9 +15,9 @@ type Notification struct {
 	WebOrderLineItemID string             `json:"web_order_line_item_id"`
 
 	LatestReceipt            string                  `json:"latest_receipt,omitempty"`
-	LatestReceiptInfo        receipt.IOS6ReceiptInfo `json:"latest_receipt_info,omitempty"`
+	LatestReceiptInfo        receipt.ReceiptInfoBody `json:"latest_receipt_info,omitempty"`
 	LatestExpiredReceipt     string                  `json:"latest_expired_receipt,omitempty"`
-	LatestExpiredReceiptInfo receipt.IOS6ReceiptInfo `json:"latest_expired_receipt_info,omitempty"`
+	LatestExpiredReceiptInfo receipt.ReceiptInfoBody `json:"latest_expired_receipt_info,omitempty"`
 
 	AutoRenewStatus          bool              `json:"auto_renew_status,string"`
 	AutoRenewStatusChangedAt receipt.AppleTime `json:"auto_renew_status_change_date"`
@@ -27,82 +27,89 @@ type Notification struct {
 }
 
 type notification struct {
-	Notification
+	body Notification
 }
 
 func (n notification) AutoRenewStatus() bool {
-	return n.Notification.AutoRenewStatus
+	return n.body.AutoRenewStatus
 }
 
 func (n notification) AutoRenewProduct() string {
-	return n.Notification.AutoRenewProductID
+	return n.body.AutoRenewProductID
 }
 
 func (n notification) AutoRenewChangedAt() time.Time {
-	if n.Notification.NotificationType == DidChangeRenewalPref {
+	if n.body.NotificationType == DidChangeRenewalPref {
 		return time.Now().UTC()
 	}
-	return n.Notification.AutoRenewStatusChangedAt.Time
+	return n.body.AutoRenewStatusChangedAt.Time
 }
 
 func (n notification) CancelledAt() time.Time {
-	if n.Notification.CancellationDate != nil {
-		return n.Notification.CancellationDate.Time
+	if n.body.CancellationDate != nil {
+		return n.body.CancellationDate.Time
 	}
 	return time.Time{}
 }
 
 func (n notification) Environment() Env {
-	return n.Notification.Env
+	return n.body.Env
 }
 
 func (n notification) ExpiresAt() time.Time {
-	if n.Notification.CancellationDate != nil {
-		return n.Notification.LatestExpiredReceiptInfo.ExpiresAt()
+	if n.body.CancellationDate != nil {
+		return n.body.LatestExpiredReceiptInfo.ExpiresDateFormatted.Time
 	}
-	return n.Notification.LatestReceiptInfo.ExpiresAt()
+	return n.body.LatestReceiptInfo.ExpiresDateFormatted.Time
 }
 
 func (n notification) IsTrialPeriod() bool {
-	if n.Notification.CancellationDate != nil {
-		return n.Notification.LatestExpiredReceiptInfo.IsTrialPeriod()
+	if n.body.CancellationDate != nil {
+		return n.body.LatestExpiredReceiptInfo.IsTrialPeriod
 	}
-	return n.Notification.LatestReceiptInfo.IsTrialPeriod()
+	return n.body.LatestReceiptInfo.IsTrialPeriod
 }
 
 func (n notification) OriginalTransactionID() string {
-	if n.Notification.CancellationDate != nil {
-		return n.Notification.LatestExpiredReceiptInfo.OriginalTransactionID()
+	if n.body.CancellationDate != nil {
+		return n.body.LatestExpiredReceiptInfo.OriginalTransactionID
 	}
-	return n.Notification.LatestReceiptInfo.OriginalTransactionID()
+	return n.body.LatestReceiptInfo.OriginalTransactionID
+}
+
+func (n notification) OriginalPurchaseDate() time.Time {
+	if n.body.CancellationDate != nil {
+		return n.body.LatestExpiredReceiptInfo.OriginalPurchaseDate.Time
+	}
+	return n.body.LatestReceiptInfo.OriginalPurchaseDate.Time
 }
 
 func (n notification) PaidAt() time.Time {
-	if n.Notification.CancellationDate != nil {
-		return n.Notification.LatestExpiredReceiptInfo.PaidAt()
+	if n.body.CancellationDate != nil {
+		return n.body.LatestExpiredReceiptInfo.PurchaseDate.Time
 	}
-	return n.Notification.LatestReceiptInfo.PaidAt()
+	return n.body.LatestReceiptInfo.PurchaseDate.Time
 }
 
 func (n notification) ProductID() string {
-	if n.Notification.CancellationDate != nil {
-		return n.Notification.LatestExpiredReceiptInfo.ProductID()
+	if n.body.CancellationDate != nil {
+		return n.body.LatestExpiredReceiptInfo.ProductID
 	}
-	return n.Notification.LatestReceiptInfo.ProductID()
+	return n.body.LatestReceiptInfo.ProductID
 }
 
 func (n notification) RefundedAt() time.Time {
-	if n.Notification.CancellationDate != nil {
-		return (*(n.Notification.CancellationDate)).Time
+	if n.body.CancellationDate != nil {
+		return (*(n.body.CancellationDate)).Time
 	}
 	return time.Time{}
 }
 
 func (n notification) StartedTrialAt() time.Time {
-	if n.Notification.CancellationDate != nil {
-		return n.Notification.LatestExpiredReceiptInfo.StartedTrialAt()
+	if n.body.CancellationDate != nil {
+		return n.body.LatestExpiredReceiptInfo.OriginalPurchaseDate.Time
 	}
-	return n.Notification.LatestReceiptInfo.StartedTrialAt()
+	return n.body.LatestReceiptInfo.OriginalPurchaseDate.Time
 }
 
 func (n notification) Status() int {
@@ -110,5 +117,5 @@ func (n notification) Status() int {
 }
 
 func (n notification) Type() NoteType {
-	return n.Notification.NotificationType
+	return n.body.NotificationType
 }

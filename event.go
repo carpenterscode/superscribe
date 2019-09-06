@@ -44,7 +44,7 @@ func (evt *Event) SetNote(note Note) {
 	evt.autoRenewChangedAt = note.AutoRenewChangedAt()
 }
 
-func (evt *Event) SetReceiptInfo(resp receipt.ReceiptInfo) {
+func (evt *Event) SetReceiptInfo(resp receipt.Info) {
 	evt.cancelledAt = resp.CancelledAt()
 	evt.expiresAt = resp.ExpiresAt()
 	evt.isTrialPeriod = resp.IsTrialPeriod()

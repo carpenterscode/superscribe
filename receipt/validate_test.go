@@ -33,7 +33,7 @@ func TestParseResponse1(t *testing.T) {
 		t.Error(readErr)
 	}
 
-	resp, parseErr := parseVerifyResponse(data)
+	resp, parseErr := parseReceiptResponse(data)
 	if parseErr != nil {
 		t.Error(parseErr)
 	}
@@ -54,7 +54,7 @@ func TestParseResponse2(t *testing.T) {
 		t.Error(readErr)
 	}
 
-	resp, parseErr := parseVerifyResponse(data)
+	resp, parseErr := parseReceiptResponse(data)
 	if parseErr != nil {
 		t.Error(parseErr)
 	}
@@ -75,7 +75,7 @@ func TestParseResponse3(t *testing.T) {
 		t.Error(readErr)
 	}
 
-	resp, parseErr := parseVerifyResponse(data)
+	resp, parseErr := parseReceiptResponse(data)
 	if parseErr != nil {
 		t.Error(parseErr)
 	}
@@ -92,5 +92,35 @@ func TestParseResponse3(t *testing.T) {
 
 	if resp.Status() != StatusSubscriptionExpired {
 		t.Error("Should parse status as 21006 Expired")
+	}
+}
+
+func TestParseResponse4(t *testing.T) {
+	data, readErr := ioutil.ReadFile("testdata/response4.json")
+	if readErr != nil {
+		t.Error(readErr)
+	}
+
+	resp, parseErr := parseReceiptResponse(data)
+	if parseErr != nil {
+		t.Error(parseErr)
+	}
+
+	paidAt := time.Date(2019, time.August, 30, 19, 6, 48, 0, time.UTC)
+	if !resp.PaidAt().Equal(paidAt) {
+		t.Errorf("Should parse %s as %s", resp.PaidAt(), paidAt)
+	}
+
+	if resp.OriginalPurchaseDate().IsZero() || !paidAt.Equal(resp.OriginalPurchaseDate()) {
+		t.Errorf("Should parse original purchase date %s as %s", resp.OriginalPurchaseDate(), paidAt)
+	}
+
+	productID := "lifetime"
+	if resp.ProductID() != "lifetime" {
+		t.Errorf("Should parse product ID %s as %s", resp.ProductID(), productID)
+	}
+
+	if resp.Status() != StatusValid {
+		t.Error("Should parse status as 0 Valid")
 	}
 }

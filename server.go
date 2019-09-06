@@ -60,12 +60,14 @@ func notificationHandler(w http.ResponseWriter, r *http.Request, listener EventL
 		return
 	}
 
-	var n notification
-	if err := json.Unmarshal(data, &n); err != nil {
+	var body Notification
+	if err := json.Unmarshal(data, &body); err != nil {
 		log.Println("Should have unmarshaled notification", err, r)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	n := notification{body}
 
 	if n.Environment() == Sandbox {
 		log.Println("Received Sandbox notification")
