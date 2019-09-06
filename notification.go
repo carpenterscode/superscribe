@@ -2,6 +2,8 @@ package superscribe
 
 import (
 	"time"
+
+	"github.com/carpenterscode/superscribe/receipt"
 )
 
 type Notification struct {
@@ -9,19 +11,19 @@ type Notification struct {
 	NotificationType NoteType `json:"notification_type"`
 	Password         string   `json:"password"`
 
-	CancellationDate   *AppleTime `json:"cancellation_date,omitempty"`
-	WebOrderLineItemID string     `json:"web_order_line_item_id"`
+	CancellationDate   *receipt.AppleTime `json:"cancellation_date,omitempty"`
+	WebOrderLineItemID string             `json:"web_order_line_item_id"`
 
-	LatestReceipt            string          `json:"latest_receipt,omitempty"`
-	LatestReceiptInfo        ios6ReceiptInfo `json:"latest_receipt_info,omitempty"`
-	LatestExpiredReceipt     string          `json:"latest_expired_receipt,omitempty"`
-	LatestExpiredReceiptInfo ios6ReceiptInfo `json:"latest_expired_receipt_info,omitempty"`
+	LatestReceipt            string                  `json:"latest_receipt,omitempty"`
+	LatestReceiptInfo        receipt.IOS6ReceiptInfo `json:"latest_receipt_info,omitempty"`
+	LatestExpiredReceipt     string                  `json:"latest_expired_receipt,omitempty"`
+	LatestExpiredReceiptInfo receipt.IOS6ReceiptInfo `json:"latest_expired_receipt_info,omitempty"`
 
-	AutoRenewStatus          bool      `json:"auto_renew_status,string"`
-	AutoRenewStatusChangedAt AppleTime `json:"auto_renew_status_change_date"`
-	AutoRenewAdamID          string    `json:"auto_renew_adam_id"`
-	AutoRenewProductID       string    `json:"auto_renew_product_id"`
-	ExpirationIntent         string    `json:"expiration_intent"`
+	AutoRenewStatus          bool              `json:"auto_renew_status,string"`
+	AutoRenewStatusChangedAt receipt.AppleTime `json:"auto_renew_status_change_date"`
+	AutoRenewAdamID          string            `json:"auto_renew_adam_id"`
+	AutoRenewProductID       string            `json:"auto_renew_product_id"`
+	ExpirationIntent         string            `json:"expiration_intent"`
 }
 
 type notification struct {
@@ -104,7 +106,7 @@ func (n notification) StartedTrialAt() time.Time {
 }
 
 func (n notification) Status() int {
-	return StatusValid // TODO: Update to use unified receipt in Fall 2019
+	return receipt.StatusValid // TODO: Update to use unified receipt in Fall 2019
 }
 
 func (n notification) Type() NoteType {

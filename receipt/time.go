@@ -1,4 +1,4 @@
-package superscribe
+package receipt
 
 import (
 	"encoding/json"

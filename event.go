@@ -3,6 +3,8 @@ package superscribe
 import (
 	"fmt"
 	"time"
+
+	"github.com/carpenterscode/superscribe/receipt"
 )
 
 type Event struct {
@@ -42,7 +44,7 @@ func (evt *Event) SetNote(note Note) {
 	evt.autoRenewChangedAt = note.AutoRenewChangedAt()
 }
 
-func (evt *Event) SetReceiptInfo(resp ReceiptInfo) {
+func (evt *Event) SetReceiptInfo(resp receipt.ReceiptInfo) {
 	evt.cancelledAt = resp.CancelledAt()
 	evt.expiresAt = resp.ExpiresAt()
 	evt.isTrialPeriod = resp.IsTrialPeriod()
@@ -118,7 +120,7 @@ func (evt Event) StartedTrialAt() time.Time {
 }
 
 func (evt Event) Status() int {
-	return StatusValid
+	return receipt.StatusValid
 }
 
 func (evt Event) String() string {

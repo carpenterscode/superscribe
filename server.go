@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/carpenterscode/superscribe/receipt"
 )
 
 type server struct {
@@ -117,10 +119,10 @@ func notificationHandler(w http.ResponseWriter, r *http.Request, listener EventL
 }
 
 func (s server) reviewSubscriptions(receipts []string) {
-	for _, receipt := range receipts {
-		resp, err := VerifyReceipt(s.secret, receipt)
+	for _, receiptData := range receipts {
+		resp, err := receipt.Validate(s.secret, receiptData)
 		if err != nil {
-			log.Println(err, receipt)
+			log.Println(err, receiptData)
 			continue
 		}
 

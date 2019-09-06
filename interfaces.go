@@ -2,6 +2,8 @@ package superscribe
 
 import (
 	"time"
+
+	"github.com/carpenterscode/superscribe/receipt"
 )
 
 //go:generate mockgen -package=superscribe -destination=./mock.go -self_package=github.com/carpenterscode/superscribe github.com/carpenterscode/superscribe EventListener,Subscription
@@ -18,23 +20,12 @@ type Note interface {
 	Type() NoteType
 	Environment() Env
 
-	ReceiptInfo
+	receipt.ReceiptInfo
 
 	AutoRenewProduct() string
 	AutoRenewChangedAt() time.Time
 	RefundedAt() time.Time
 	StartedTrialAt() time.Time
-}
-
-type ReceiptInfo interface {
-	Status() int
-	AutoRenewStatus() bool
-	CancelledAt() time.Time
-	ExpiresAt() time.Time
-	IsTrialPeriod() bool
-	OriginalTransactionID() string
-	PaidAt() time.Time
-	ProductID() string
 }
 
 type EventListener interface {
