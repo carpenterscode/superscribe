@@ -1,5 +1,7 @@
 github.com/carpenterscode/appsflyer-go v1.3.0 h1:/Yqf1E/nYWIDtsK+2Tp/OxXvGLMFOvA5+k3ObSfzmA0=
 github.com/carpenterscode/appsflyer-go v1.3.0/go.mod h1:ButFaYdyZOHApClpJWR2jNJqTmig2gxELDTgk+koaas=
+github.com/carpenterscode/superscribe/receipt v1.0.0 h1:8d1lruUPrl0DDqCm5SRHSawJr0xX/kmqbUJ18rzKmTg=
+github.com/carpenterscode/superscribe/receipt v1.0.0/go.mod h1:PSURmc8C9vyrbCVMkqLd6xFKmPayhTWGERub8fbWt8k=
 github.com/golang/mock v1.3.1 h1:qGJ6qTW+x6xX/my+8YUVl4WNpX9B7+/l2tRsHGZ7f2s=
 github.com/golang/mock v1.3.1/go.mod h1:sBzyDLLjw3U8JLTeZvSv8jJB+tU5PVekmnlKIyFUx0Y=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
