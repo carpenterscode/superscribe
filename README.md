@@ -10,8 +10,8 @@ A consistent way to manage App Store subscriptions
 Have you tried using App Store Status Update Notifications for your app’s in-app subscriptions
 and wondered why there are so few _RENEWAL_ notifications, or why neither _CANCEL_ nor
 _DID_CHANGE_RENEWAL_PREF_ indicate when _auto_renew_status_ was switched on or off,
-or why sometimes you get iOS 6 style receipts when your app never supported iOS 6 to begin with,
-or… why? Me too. I’m sure some of you have reverse engineered every iteration of Apple’s
+or why sometimes you get iOS 6 style receipts when your app never supported iOS 6 to begin with?
+Me too. I’m sure some of you have reverse engineered every iteration of Apple’s
 /verifyReceipt endpoint responses or status update notifications, but I’ve had a hard time keeping
 up.
 
