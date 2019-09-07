@@ -3,19 +3,16 @@
 [![Build Status](https://travis-ci.org/carpenterscode/superscribe.svg?branch=master)](https://travis-ci.org/carpenterscode/superscribe)
 [![GoDoc](https://godoc.org/github.com/carpenterscode/superscribe?status.svg)](https://godoc.org/github.com/carpenterscode/superscribe)
 
-A consistent way to manage App Store subscriptions
+An easier way to handle App Store subscriptions
 
 ## Overview
 
-Have you tried using App Store Status Update Notifications for your app’s in-app subscriptions
-and wondered why there are so few _RENEWAL_ notifications, or why neither _CANCEL_ nor
-_DID_CHANGE_RENEWAL_PREF_ indicate when _auto_renew_status_ was switched on or off,
-or why sometimes you get iOS 6 style receipts when your app never supported iOS 6 to begin with,
-or… why? Me too. I’m sure some of you have reverse engineered every iteration of Apple’s
-/verifyReceipt endpoint responses or status update notifications, but I’ve had a hard time keeping
-up.
+Getting App Store Status Update Notifications (now Server-to-Server Notifications) for in-app
+subscriptions can be tricky. _RENEWAL_ notifications may not occur as expected, _CANCEL_ does not
+indicate when _auto_renew_status_ was switched on or off, and it can seem arbitrary when you
+get older iOS 6 style of receipts or the new style.
 
-If you don't believe me, check these out:
+Others have described these challenges too:
 
 - [statusUpdateNotification not getting renewal notification type](https://forums.developer.apple.com/message/283579#283579) from Apple Developer Forums
 - [Apple Subscription Notifications Are Almost Useless](https://www.revenuecat.com/2018/09/24/apple-subscription-notifications-are-almost-useless) from RevenueCat
@@ -105,9 +102,6 @@ increase extensibility and robustness.
 - **Distinguish among first, first year's worth of, and remaining payments.** The _paid at_ event
   could be made more versatile and track 30% vs 15% App Store fee. Or to filter out renewals from
   first payments.
-- **Make it easy for listeners to use the same single database query.** For instance, a server with
-  listeners for multiple analytics services may need to get price and currency from the database,
-  but for now, the easy solution involves making one query per listener, per event.
 - **Track plan upgrade responses from customers.** For instance, moving all monthly subscriptions
   from 7.99/mo to 9.99/mo.
 - **Offer a scalable solution.** Subscriptions in the local database should only be scanned by a
