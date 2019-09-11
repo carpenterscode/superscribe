@@ -363,6 +363,8 @@ func parseReceiptResponse(data []byte) (Info, error) {
 		}
 	}
 
+	fmt.Println("Receipt JSON:", string(receiptInfoData))
+
 	switch receiptInfo.(type) {
 	case map[string]interface{}:
 		var info IOS6ReceiptInfo
