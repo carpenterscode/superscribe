@@ -8,6 +8,7 @@ import (
 
 	ss "github.com/carpenterscode/superscribe"
 	"github.com/carpenterscode/superscribe/listener"
+	"github.com/carpenterscode/superscribe/receipt"
 )
 
 func fetch(receipt string) (ss.Subscription, error) {

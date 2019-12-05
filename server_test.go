@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
+
+	"github.com/carpenterscode/superscribe/receipt"
 )
 
 type EventMatcher struct {
