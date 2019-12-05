@@ -15,6 +15,7 @@ type server struct {
 	Match    ExpiringSubscriptions
 	Listener *MultiEventListener
 	Fetch    SubscriptionFetch
+	Updater  SubscriptionUpdater
 	mux      *http.ServeMux
 	secret   string
 	server   *http.Server
@@ -51,7 +52,7 @@ func (s server) Stop() {
 }
 
 func notificationHandler(w http.ResponseWriter, r *http.Request, listener EventListener,
-	fetch SubscriptionFetch) {
+	fetch SubscriptionFetch, updater SubscriptionUpdater) {
 
 	data, bodyErr := ioutil.ReadAll(r.Body)
 	if bodyErr != nil {
@@ -72,6 +73,12 @@ func notificationHandler(w http.ResponseWriter, r *http.Request, listener EventL
 	if n.Environment() == Sandbox {
 		log.Println("Received Sandbox notification")
 		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	if err := updater.UpdateWithNotification(n); err != nil {
+		log.Println(n.OriginalTransactionID(), err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -128,6 +135,11 @@ func (s server) reviewSubscriptions(receipts []string) {
 			continue
 		}
 
+		if err := s.Updater.UpdateWithReceipt(resp); err != nil {
+			log.Println(resp.OriginalTransactionID(), err)
+			continue
+		}
+
 		sub, fetchErr := s.Fetch(resp.OriginalTransactionID())
 		if fetchErr != nil {
 			log.Println(fetchErr, resp.OriginalTransactionID())
@@ -151,8 +163,8 @@ func (s server) reviewSubscriptions(receipts []string) {
 	}
 }
 
-func (s server) AddListener(l EventListener, mustSucceed bool) {
-	s.Listener.Add(l, mustSucceed)
+func (s server) AddListener(l EventListener) {
+	s.Listener.Add(l)
 }
 
 func (s server) Addr() string {
@@ -164,13 +176,14 @@ func (s server) HandleFunc(pattern string, handlerFunc http.HandlerFunc) {
 }
 
 func NewServer(addr, secret string, matcher ExpiringSubscriptions,
-	fetch SubscriptionFetch, interval time.Duration) *server {
+	fetch SubscriptionFetch, updater SubscriptionUpdater, interval time.Duration) *server {
 
 	mux := http.NewServeMux()
 	srv := server{
 		Match:    matcher,
 		Listener: NewMultiEventListener(),
 		Fetch:    fetch,
+		Updater:  updater,
 		mux:      mux,
 		secret:   secret,
 		server:   &http.Server{Addr: addr, Handler: mux},
@@ -178,7 +191,7 @@ func NewServer(addr, secret string, matcher ExpiringSubscriptions,
 	}
 
 	mux.HandleFunc("/superscribe", func(w http.ResponseWriter, r *http.Request) {
-		notificationHandler(w, r, srv.Listener, fetch)
+		notificationHandler(w, r, srv.Listener, fetch, updater)
 	})
 
 	return &srv

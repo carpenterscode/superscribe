@@ -75,12 +75,13 @@ func TestHandleInitialBuyToTrial(t *testing.T) {
 	mockListener.EXPECT().StartedTrial(EventMatcher{expected}).AnyTimes()
 
 	fakeMatcher := func(now time.Time) []string { return []string{} }
+	fakeUpdater := stubUpdater{}
 	fakeFetcher := func(originalTransactionID string) (Subscription, error) {
 		return mockSub, nil
 	}
 
-	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, 1)
-	srv.Listener.Add(mockListener, false)
+	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, fakeUpdater, 1)
+	srv.Listener.Add(mockListener)
 
 	// Test code
 	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
@@ -114,12 +115,13 @@ func TestHandleInitialBuyToSubscribe(t *testing.T) {
 	mockListener.EXPECT().Paid(EventMatcher{expected}).AnyTimes()
 
 	fakeMatcher := func(now time.Time) []string { return []string{} }
+	fakeUpdater := stubUpdater{}
 	fakeFetcher := func(originalTransactionID string) (Subscription, error) {
 		return mockSub, nil
 	}
 
-	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, 1)
-	srv.Listener.Add(mockListener, false)
+	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, fakeUpdater, 1)
+	srv.Listener.Add(mockListener)
 
 	// Test code
 	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
@@ -151,12 +153,13 @@ func TestHandleRenewal(t *testing.T) {
 	mockListener.EXPECT().Paid(EventMatcher{expected}).AnyTimes()
 
 	fakeMatcher := func(now time.Time) []string { return []string{} }
+	fakeUpdater := stubUpdater{}
 	fakeFetcher := func(originalTransactionID string) (Subscription, error) {
 		return mockSub, nil
 	}
 
-	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, 1)
-	srv.Listener.Add(mockListener, false)
+	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, fakeUpdater, 1)
+	srv.Listener.Add(mockListener)
 
 	// Test code
 	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
@@ -188,12 +191,13 @@ func TestHandleInteractiveRenewal(t *testing.T) {
 	mockListener.EXPECT().Paid(EventMatcher{expected}).AnyTimes()
 
 	fakeMatcher := func(now time.Time) []string { return []string{} }
+	fakeUpdater := stubUpdater{}
 	fakeFetcher := func(originalTransactionID string) (Subscription, error) {
 		return mockSub, nil
 	}
 
-	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, 1)
-	srv.Listener.Add(mockListener, false)
+	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, fakeUpdater, 1)
+	srv.Listener.Add(mockListener)
 
 	// Test code
 	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
@@ -228,12 +232,13 @@ func TestHandleCancel(t *testing.T) {
 	mockListener.EXPECT().Refunded(EventMatcher{expected}).AnyTimes()
 
 	fakeMatcher := func(now time.Time) []string { return []string{} }
+	fakeUpdater := stubUpdater{}
 	fakeFetcher := func(originalTransactionID string) (Subscription, error) {
 		return mockSub, nil
 	}
 
-	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, 1)
-	srv.Listener.Add(mockListener, false)
+	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, fakeUpdater, 1)
+	srv.Listener.Add(mockListener)
 
 	// Test code
 	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
@@ -266,12 +271,13 @@ func TestHandleDidChangeRenewalStatusToOff(t *testing.T) {
 	mockListener.EXPECT().ChangedAutoRenewStatus(EventMatcher{expected}).Times(1)
 
 	fakeMatcher := func(now time.Time) []string { return []string{} }
+	fakeUpdater := stubUpdater{}
 	fakeFetcher := func(originalTransactionID string) (Subscription, error) {
 		return mockSub, nil
 	}
 
-	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, 1)
-	srv.Listener.Add(mockListener, false)
+	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, fakeUpdater, 1)
+	srv.Listener.Add(mockListener)
 
 	// Test code
 	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
@@ -304,12 +310,13 @@ func TestHandleDidChangeRenewalStatusToOn(t *testing.T) {
 	mockListener.EXPECT().ChangedAutoRenewStatus(EventMatcher{expected}).Times(1)
 
 	fakeMatcher := func(now time.Time) []string { return []string{} }
+	fakeUpdater := stubUpdater{}
 	fakeFetcher := func(originalTransactionID string) (Subscription, error) {
 		return mockSub, nil
 	}
 
-	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, 1)
-	srv.Listener.Add(mockListener, false)
+	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, fakeUpdater, 1)
+	srv.Listener.Add(mockListener)
 
 	// Test code
 	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
@@ -342,12 +349,13 @@ func TestHandleDidChangeRenewalPref(t *testing.T) {
 	mockListener.EXPECT().ChangedAutoRenewProduct(EventMatcher{expected}).Times(1)
 
 	fakeMatcher := func(now time.Time) []string { return []string{} }
+	fakeUpdater := stubUpdater{}
 	fakeFetcher := func(originalTransactionID string) (Subscription, error) {
 		return mockSub, nil
 	}
 
-	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, 1)
-	srv.Listener.Add(mockListener, false)
+	srv := NewServer("http://example.com", "secret", fakeMatcher, fakeFetcher, fakeUpdater, 1)
+	srv.Listener.Add(mockListener)
 
 	// Test code
 	req := httptest.NewRequest("POST", "http://example.com/superscribe", dataReader)
@@ -356,4 +364,14 @@ func TestHandleDidChangeRenewalPref(t *testing.T) {
 	if w.Code != http.StatusOK {
 		t.Errorf("Wrong status code: got %v want %v", w.Code, http.StatusOK)
 	}
+}
+
+type stubUpdater struct{}
+
+func (updater stubUpdater) UpdateWithNotification(note Note) error {
+	return nil
+}
+
+func (updater stubUpdater) UpdateWithReceipt(r receipt.Info) error {
+	return nil
 }

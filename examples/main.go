@@ -21,16 +21,27 @@ func match(now time.Time) []string {
 	return results
 }
 
+type updater struct{}
+
+func (u updater) UpdateWithNotification(note ss.Note) error {
+	return nil
+}
+
+func (u updater) UpdateWithReceipt(r receipt.Info) error {
+	return nil
+}
+
 func main() {
 	srv := ss.NewServer(
 		":8080",
 		"password",
 		match,
 		fetch,
+		updater{},
 		time.Second,
 	)
-	srv.AddListener(listener.AppsFlyer{}, true)
-	srv.AddListener(listener.Stub{}, false)
+	srv.AddListener(listener.AppsFlyer{})
+	srv.AddListener(listener.Stub{})
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)

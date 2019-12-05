@@ -28,6 +28,11 @@ type Note interface {
 	StartedTrialAt() time.Time
 }
 
+type SubscriptionUpdater interface {
+	UpdateWithNotification(Note) error
+	UpdateWithReceipt(receipt.Info) error
+}
+
 type EventListener interface {
 
 	// Name describes the listener for identification in the logs

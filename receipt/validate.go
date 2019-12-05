@@ -270,24 +270,20 @@ func Validate(secret, receipt string) (Info, error) {
 	// sandbox url.
 	data, sendErr := sendReceiptRequest(&client, productionURL, postData)
 	if sendErr != nil {
-		log.Println("sendVerifyReceipt send error", sendErr)
 		return nil, sendErr
 	}
 
 	resp, parseErr := parseReceiptResponse(data)
 	if parseErr == fromTestEnvError {
 		if _, err := postData.Seek(0, io.SeekStart); err != nil {
-			log.Println("test error should resend ")
 			return nil, err
 		}
 		data, sendErr = sendReceiptRequest(&client, sandboxURL, postData)
 		if sendErr != nil {
-			log.Println("sendVerifyReceipt send error", sendErr)
 			return nil, sendErr
 		}
 		resp, parseErr = parseReceiptResponse(data)
 		if parseErr != nil {
-			log.Println("parseVerify respeon test shoul could not parse ", string(data))
 			return nil, parseErr
 		}
 	} else if parseErr != nil {
