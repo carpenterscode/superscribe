@@ -3,22 +3,22 @@
 	"status": 0,
 	"auto_renew_product_id": "year-premium",
 	"receipt": {
-		"expires_date_formatted": "2019-08-20 04:28:57 Etc/GMT",
+		"expires_date_ms": "1566275337000",
 		"is_in_intro_offer_period": "false",
 		"is_trial_period": "false",
 		"original_transaction_id": "123456789012345",
 		"product_id": "year-premium",
-		"purchase_date": "2018-08-20 04:28:57 Etc/GMT",
-		"original_purchase_date": "2018-08-20 04:28:58 Etc/GMT"
+		"purchase_date_ms": "1534739337000",
+		"original_purchase_date_ms": "1534739338000"
 	},
 	"latest_receipt_info": {
-		"expires_date_formatted": "2019-08-20 04:28:57 Etc/GMT",
+		"expires_date_ms": "1566275337000",
 		"is_in_intro_offer_period": "false",
 		"is_trial_period": "false",
 		"original_transaction_id": "123456789012345",
 		"product_id": "year-premium",
-		"purchase_date": "2018-08-20 04:28:57 Etc/GMT",
-		"original_purchase_date": "2018-08-20 04:28:58 Etc/GMT"
+		"purchase_date_ms": "1534739337000",
+		"original_purchase_date_ms": "1534739338000"
 	},
 	"latest_receipt": "latestreceipt=="
 }

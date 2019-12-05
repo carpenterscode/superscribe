@@ -107,17 +107,8 @@ func TestParseResponse4(t *testing.T) {
 	}
 
 	paidAt := time.Date(2019, time.August, 30, 19, 6, 48, 0, time.UTC)
-	if !resp.PaidAt().Equal(paidAt) {
-		t.Errorf("Should parse %s as %s", resp.PaidAt(), paidAt)
-	}
-
 	if resp.OriginalPurchaseDate().IsZero() || !paidAt.Equal(resp.OriginalPurchaseDate()) {
 		t.Errorf("Should parse original purchase date %s as %s", resp.OriginalPurchaseDate(), paidAt)
-	}
-
-	productID := "lifetime"
-	if resp.ProductID() != "lifetime" {
-		t.Errorf("Should parse product ID %s as %s", resp.ProductID(), productID)
 	}
 
 	if resp.Status() != StatusValid {

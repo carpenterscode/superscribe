@@ -35,16 +35,15 @@ type receipt interface {
 }
 
 type ReceiptInfoBody struct {
-	Quantity              string     `json:"quantity"`
-	ProductID             string     `json:"product_id"`
-	TransactionID         string     `json:"transaction_id"`
-	OriginalTransactionID string     `json:"original_transaction_id"`
-	PurchaseDate          AppleTime  `json:"purchase_date"`
-	OriginalPurchaseDate  AppleTime  `json:"original_purchase_date"`
-	CancellationDate      *AppleTime `json:"cancellation_date,omitempty"`
-	IsTrialPeriod         bool       `json:"is_trial_period,string"`
-	ExpiresDate           AppleTime  `json:"expires_date"`
-	ExpiresDateFormatted  AppleTime  `json:"expires_date_formatted"`
+	Quantity              string      `json:"quantity"`
+	ProductID             string      `json:"product_id"`
+	TransactionID         string      `json:"transaction_id"`
+	OriginalTransactionID string      `json:"original_transaction_id"`
+	PurchaseDate          Millistamp  `json:"purchase_date_ms,string"`
+	OriginalPurchaseDate  Millistamp  `json:"original_purchase_date_ms,string"`
+	CancellationDate      *Millistamp `json:"cancellation_date_ms,string,omitempty"`
+	IsTrialPeriod         bool        `json:"is_trial_period,string"`
+	ExpiresDate           Millistamp  `json:"expires_date_ms,string"`
 
 	InApp []ReceiptInfoBody `json:"in_app,omitempty"`
 }
@@ -62,7 +61,7 @@ func (info receiptInfo) OriginalTransactionID() string {
 }
 
 func (info receiptInfo) PaidAt() time.Time {
-	return info.ReceiptInfoBody.PurchaseDate.Time
+	return info.ReceiptInfoBody.PurchaseDate.Time()
 }
 
 func (info receiptInfo) ProductID() string {
@@ -73,7 +72,7 @@ type response struct {
 	info receipt
 
 	AutoRenewStatus          int             `json:"auto_renew_status"`
-	CancellationDate         *AppleTime      `json:"cancellation_date"`
+	CancellationDate         *Millistamp     `json:"cancellation_date_ms,string,omitempty"`
 	LatestExpiredReceiptInfo json.RawMessage `json:"latest_expired_receipt_info"`
 	LatestReceiptInfo        json.RawMessage `json:"latest_receipt_info"`
 	Receipt                  json.RawMessage `json:"receipt"`
@@ -96,7 +95,7 @@ func (v validation) AutoRenewStatus() bool {
 
 func (v validation) CancelledAt() time.Time {
 	if v.response.CancellationDate != nil {
-		return v.response.CancellationDate.Time
+		return v.response.CancellationDate.Time()
 	}
 	return time.Time{}
 }
@@ -178,7 +177,7 @@ type IOS6ReceiptInfo struct {
 }
 
 func (info IOS6ReceiptInfo) ExpiresAt() time.Time {
-	return info.body.ExpiresDateFormatted.Time
+	return info.body.ExpiresDate.Time()
 }
 
 func (info IOS6ReceiptInfo) IsTrialPeriod() bool {
@@ -186,7 +185,7 @@ func (info IOS6ReceiptInfo) IsTrialPeriod() bool {
 }
 
 func (info IOS6ReceiptInfo) OriginalPurchaseDate() time.Time {
-	return info.body.OriginalPurchaseDate.Time
+	return info.body.OriginalPurchaseDate.Time()
 }
 
 func (info IOS6ReceiptInfo) OriginalTransactionID() string {
@@ -194,7 +193,7 @@ func (info IOS6ReceiptInfo) OriginalTransactionID() string {
 }
 
 func (info IOS6ReceiptInfo) PaidAt() time.Time {
-	return info.body.PurchaseDate.Time
+	return info.body.PurchaseDate.Time()
 }
 
 func (info IOS6ReceiptInfo) ProductID() string {
@@ -206,7 +205,7 @@ type modernReceiptInfo struct {
 }
 
 func (info modernReceiptInfo) ExpiresAt() time.Time {
-	return info.body.ExpiresDate.Time
+	return info.body.ExpiresDate.Time()
 }
 
 func (info modernReceiptInfo) IsTrialPeriod() bool {
@@ -214,7 +213,7 @@ func (info modernReceiptInfo) IsTrialPeriod() bool {
 }
 
 func (info modernReceiptInfo) OriginalPurchaseDate() time.Time {
-	return info.body.OriginalPurchaseDate.Time
+	return info.body.OriginalPurchaseDate.Time()
 }
 
 func (info modernReceiptInfo) OriginalTransactionID() string {
@@ -222,7 +221,7 @@ func (info modernReceiptInfo) OriginalTransactionID() string {
 }
 
 func (info modernReceiptInfo) PaidAt() time.Time {
-	return info.body.PurchaseDate.Time
+	return info.body.PurchaseDate.Time()
 }
 
 func (info modernReceiptInfo) ProductID() string {
@@ -361,16 +360,13 @@ func parseReceiptResponse(data []byte) (Info, error) {
 
 	switch receiptInfo.(type) {
 	case map[string]interface{}:
-		var info IOS6ReceiptInfo
-		if err := json.Unmarshal(receiptInfoData, &info.body); err != nil {
+		var infoBody ReceiptInfoBody
+		if err := json.Unmarshal(receiptInfoData, &infoBody); err != nil {
 			log.Println("Should have decoded iOS 6 style receipt")
 			return nil, err
 		}
-		if len(info.body.InApp) == 0 {
-			v.response.info = info
-		} else {
-			v.response.info = IOS6ReceiptInfo{info.body.InApp[0]}
-		}
+
+		v.response.info = modernReceiptInfo{infoBody}
 		return v, nil
 
 	case []interface{}:
@@ -380,7 +376,7 @@ func parseReceiptResponse(data []byte) (Info, error) {
 			return nil, err
 		}
 		sort.Slice(infoList, func(i, j int) bool {
-			return infoList[i].PurchaseDate.Time.Before(infoList[j].PurchaseDate.Time)
+			return infoList[i].PurchaseDate.Time().Before(infoList[j].PurchaseDate.Time())
 		})
 
 		v.response.info = modernReceiptInfo{infoList[len(infoList)-1]}

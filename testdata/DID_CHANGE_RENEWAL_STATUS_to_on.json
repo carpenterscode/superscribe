@@ -1,13 +1,11 @@
 {
 	"latest_receipt": "latestreceipt==",
-	"auto_renew_status_change_date": "2019-06-10 21:39:47 Etc/GMT",
+	"auto_renew_status_change_date_ms": "1560202787000",
 	"environment": "PROD",
 	"auto_renew_status": "true",
-	"auto_renew_status_change_date_pst":
-		"2019-06-10 14:39:47 America/Los_Angeles",
 	"latest_receipt_info": {
 		"quantity": "1",
-		"expires_date_formatted": "2019-03-13 19:11:36 Etc/GMT",
+		"expires_date": "1552504296000",
 		"is_in_intro_offer_period": "false",
 		"is_trial_period": "true",
 		"item_id": "1454202010",
@@ -19,8 +17,8 @@
 		"web_order_line_item_id": "520000139327002",
 		"version_external_identifier": "831598371",
 		"product_id": "year-premium",
-		"purchase_date": "2019-03-06 20:11:36 Etc/GMT",
-		"original_purchase_date": "2019-03-02 07:27:19 Etc/GMT"
+		"purchase_date_ms": "1551903096000",
+		"original_purchase_date_ms": "1551511639000"
 	},
 	"auto_renew_status_change_date_ms": "1560202787000",
 	"auto_renew_product_id": "year-premium",

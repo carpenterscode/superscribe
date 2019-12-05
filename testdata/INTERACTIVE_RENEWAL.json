@@ -1,13 +1,13 @@
 {
 	"latest_receipt": "latestreceipt==",
 	"latest_receipt_info": {
-		"expires_date_formatted": "2019-03-13 19:11:36 Etc/GMT",
+		"expires_date": "1552504296000",
 		"is_in_intro_offer_period": "false",
 		"is_trial_period": "false",
 		"original_transaction_id": "123456789012345",
 		"product_id": "year-premium",
-		"purchase_date": "2019-03-06 20:11:36 Etc/GMT",
-		"original_purchase_date": "2019-03-02 07:27:19 Etc/GMT"
+		"purchase_date_ms": "1551903096000",
+		"original_purchase_date_ms": "1551511639000"
 	},
 	"environment": "PROD",
 	"auto_renew_status": "true",
