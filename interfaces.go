@@ -26,6 +26,8 @@ type Note interface {
 	AutoRenewChangedAt() time.Time
 	RefundedAt() time.Time
 	StartedTrialAt() time.Time
+
+	GracePeriodEndsAt() (time.Time, bool)
 }
 
 type SubscriptionUpdater interface {
@@ -77,6 +79,7 @@ type Subscription interface {
 	AutoRenewStatus() bool
 	IsTrialPeriod() bool
 	ExpiresAt() time.Time
+	GracePeriodEndsAt() (time.Time, bool)
 
 	Currency() string
 	Price() float64

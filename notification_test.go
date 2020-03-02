@@ -18,6 +18,7 @@ const (
 var autoRenewStatusChangedDate = time.Date(2019, time.June, 10, 21, 39, 47, 0, time.UTC)
 var cancellationDate = time.Date(2019, time.March, 6, 17, 30, 17, 0, time.UTC)
 var expiresDate = time.Date(2019, time.March, 13, 19, 11, 36, 0, time.UTC)
+var gracePeriodExpiresDate = time.Date(2020, time.March, 8, 13, 00, 56, 0, time.UTC)
 var purchaseDate = time.Date(2019, time.March, 6, 20, 11, 36, 0, time.UTC)
 var originalPurchaseDate = time.Date(2019, time.March, 6, 20, 11, 36, 0, time.UTC)
 var originalTransactionID = "123456789012345"
@@ -169,5 +170,19 @@ func TestParseDidChangeRenewalStatus(t *testing.T) {
 		t.Error("Should have parsed purchase date as", purchaseDate)
 	} else if !n.AutoRenewChangedAt().Equal(autoRenewStatusChangedDate) {
 		t.Error("Should have parsed auto renewed status changed as", autoRenewStatusChangedDate)
+	}
+}
+
+func TestParseDidFailToRenew(t *testing.T) {
+	n := notificationFromFile("DID_FAIL_TO_RENEW.json")
+
+	if n.Environment() != Prod {
+		t.Error("Should have parsed environment: PROD")
+	} else if n.Type() != DidFailToRenew {
+		t.Error("Should have parsed notification type: DID_FAIL_TO_RENEW")
+	}
+
+	if expiry, ok := n.GracePeriodEndsAt(); ok && expiry.Equal(gracePeriodExpiresDate) {
+		t.Error("Should have parsed grace period expiration date as", expiry)
 	}
 }

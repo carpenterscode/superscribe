@@ -21,6 +21,7 @@ type Event struct {
 	autoRenewChangedAt time.Time
 	cancelledAt        time.Time
 	expiresAt          time.Time
+	gracePeriodEndsAt  *time.Time
 	paidAt             time.Time
 	refundedAt         time.Time
 	startedTrialAt     time.Time
@@ -32,6 +33,9 @@ type Event struct {
 func (evt *Event) SetNote(note Note) {
 	evt.cancelledAt = note.CancelledAt()
 	evt.expiresAt = note.ExpiresAt()
+	if expiry, ok := note.GracePeriodEndsAt(); ok {
+		evt.gracePeriodEndsAt = &expiry
+	}
 	evt.isTrialPeriod = note.IsTrialPeriod()
 	evt.originalTransactionID = note.OriginalTransactionID()
 	evt.paidAt = note.PaidAt()
@@ -89,6 +93,13 @@ func (evt Event) IsTrialPeriod() bool {
 
 func (evt Event) ExpiresAt() time.Time {
 	return evt.expiresAt
+}
+
+func (evt Event) GracePeriodEndsAt() (time.Time, bool) {
+	if expiry := evt.gracePeriodEndsAt; expiry != nil {
+		return *expiry, true
+	}
+	return time.Time{}, false
 }
 
 func (evt Event) Currency() string {

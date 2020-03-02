@@ -24,6 +24,8 @@ type Notification struct {
 	AutoRenewAdamID          string             `json:"auto_renew_adam_id"`
 	AutoRenewProductID       string             `json:"auto_renew_product_id"`
 	ExpirationIntent         string             `json:"expiration_intent"`
+
+	UnifiedReceipt receipt.Unified `json:"unified_receipt"`
 }
 
 type notification struct {
@@ -71,6 +73,10 @@ func (n notification) ExpiresAt() time.Time {
 		return n.body.LatestExpiredReceiptInfo.ExpiresDate.Time()
 	}
 	return n.body.LatestReceiptInfo.ExpiresDate.Time()
+}
+
+func (n notification) GracePeriodEndsAt() (time.Time, bool) {
+	return n.body.UnifiedReceipt.GracePeriodExpiresDate()
 }
 
 func (n notification) IsTrialPeriod() bool {

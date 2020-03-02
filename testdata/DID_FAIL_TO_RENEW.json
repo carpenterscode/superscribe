@@ -1,0 +1,34 @@
+{
+	"unified_receipt": {
+		"latest_receipt": "latestreceipt==",
+		"pending_renewal_info": [
+			{
+				"is_in_billing_retry_period": "1",
+				"auto_renew_status": "1",
+				"grace_period_expires_date_ms": "1583629256000",
+				"original_transaction_id": "123456789012345",
+				"product_id": "year-premium",
+				"expiration_intent": "2",
+				"auto_renew_product_id": "year-premium"
+			}
+		],
+		"environment": "Production",
+		"status": 0,
+		"latest_receipt_info": [
+			{
+				"purchase_date_ms": "1581642056000",
+				"original_purchase_date_ms": "1581642057000",
+				"transaction_id": "123456789012345",
+				"original_transaction_id": "123456789012345",
+				"quantity": "1",
+				"expires_date_ms": "1582246856000",
+				"product_id": "year-premium",
+				"is_in_intro_offer_period": "false",
+				"is_trial_period": "true"
+			}
+		]
+	},
+	"environment": "PROD",
+	"auto_renew_product_id": "year-premium",
+	"notification_type": "DID_FAIL_TO_RENEW"
+}

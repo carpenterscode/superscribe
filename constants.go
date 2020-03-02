@@ -18,4 +18,5 @@ const (
 
 	// Introduced in June 2019 at WWDC
 	DidChangeRenewalStatus NoteType = "DID_CHANGE_RENEWAL_STATUS"
+	DidFailToRenew         NoteType = "DID_FAIL_TO_RENEW"
 )
